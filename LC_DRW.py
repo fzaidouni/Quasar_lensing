@@ -9,6 +9,10 @@ import matplotlib.pyplot as plt
 
 import argparse
 
+import random
+
+
+
 # e.g.
 # LC_DRW.py -tau 90 -sf 0.2 -xmu 1. -sn r
 
@@ -71,6 +75,11 @@ for i in [1]:
 
     #t_drive = np.arange(ti, tf, dt)
     t_drive = np.arange(ti, tf+dt, dt)
+    n=5
+    t_drive1 = t_drive+n
+    t_drive2 = t_drive+n*2
+    t_drive3 = t_drive+n*3
+
     f_drive = generate_damped_RW(t_drive, tau=tau, z=zs, SFinf=SFinf, xmean=xmean)
 
     f_drive = abs(f_drive)
@@ -82,13 +91,55 @@ for i in [1]:
 
     fn = stem_out+'/'+fn
 
-    np.savetxt(fn,np.array([t_drive, f_drive]).T,fmt='%f')
+    #np.savetxt(fn,np.array([t_drive, f_drive]).T,fmt='%f')
 
     plt.plot(t_drive, f_drive,  color='black', label='DRW')
-
+    plt.plot(t_drive1, f_drive, color='red', label='DRW1')
+    plt.plot(t_drive2, f_drive, color='blue', label='DRW2')
+    plt.plot(t_drive3, f_drive, color='green', label='DRW3')
     plt.xlabel('t (days)')
     plt.ylabel('Fraction Variation')
     plt.legend(loc=3)
     plt.show()
+
+
+    plt.scatter(t_drive, f_drive,  color='black', label='DRW')
+
+    plt.xlabel('t (days)')
+    plt.ylabel('Fraction Variation')
+    plt.legend(loc=3)
+
+    sample_t = np.array([])
+    sample_f = np.array([])
+    i=1
+    s=0
+    N = 365*2+1
+    while i<= N :
+        if ((random.choice([1, 2, 3])) == 1):
+            sample_t = np.append(sample_t,t_drive[i-1+s:i+9+s])
+            sample_f = np.append(sample_f, f_drive[i-1+s:i+9+s])
+        s+=9
+        i+=1
+    #print(np.sort(sample_t)[0:10], len(sample_t))
+    #plt.scatter(sample_t, sample_f, color='red', label='DRW')
+
+    t_final = np.array([])
+    f_final = np.array([])
+    l=0
+    #print(int(len(sample_t)/10))
+    for i in range(1,int(len(sample_t)/10)+1):
+        # print(i)
+        rand = random.randint(1,11)
+        list_t = sample_t[0+10*(i-1):10*i]
+        list_f = sample_f[0+10*(i-1):10*i]
+        index = random.choice((range(len(list_t))))
+        t_final = np.append(t_final,list_t[index])
+        f_final = np.append(f_final,list_f[index])
+        # print(list_[index])
+    print(t_final,f_final)
+    plt.scatter(t_final,f_final,color='blue')
+    plt.show()
+
+
 
 
